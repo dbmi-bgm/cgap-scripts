@@ -1,32 +1,56 @@
 #!/usr/bin/env python3
 
-##############################################
+################################################
 #
 #   Add read groups to a BAM file using pysam
+#    and samtools to multi-thread compression
 #
 #   Michele Berselli
 #   berselli.michele@gmail.com
 #
-##############################################
+################################################
 
+################################################
+#   Libraries
+################################################
 import sys, argparse, os
+import subprocess
 import copy as cp
 import pysam as ps
 
-#Functions
-def main(args): # use as args['name']
+################################################
+#   Functions
+################################################
+def header_as_str(header):
+    str_header = ''
+    for key in header:
+        for d in header[key]:
+            s = '@' + str(key) + '\t'
+            for k, v in d.items():
+                s += str(k) + ':' + str(v) + '\t'
+            #end for
+            str_header += s.rstrip() + '\n'
+        #end for
+    #end for
+    return str_header
+#end def write_header
 
-    #Variables
+def main(args):
+
+    # Variables
     directory = args['directory'] if args['directory'] else '.'
     platform = args['platform'] if args['platform'] else 'illumina'
     samplename = args['samplename']
     threads = int(args['threads']) if args['threads'] else 1
 
-    #Data structures
+    # Open bamfile using samtools and send to pipe
+    pipe_in = subprocess.Popen(['samtools','view', '-h', '-@', str(threads), args['inputfile']], stdout=subprocess.PIPE)
+
+    # Data structures
     IDs = set()
 
-    #Reading header and all possible IDs
-    samfile = ps.AlignmentFile(args['inputfile'], "rb", threads=threads)
+    # Reading header and all possible IDs
+    samfile = ps.AlignmentFile(pipe_in.stdout, 'r')
 
     header = cp.deepcopy(dict(samfile.header))
     header.setdefault('RG', [])
@@ -36,23 +60,35 @@ def main(args): # use as args['name']
         IDs.add(ID)
     #end for
 
-    #Updating header with read groups
+    # Updating header with read groups
     {header['RG'].append({'ID': ID, 'PL': platform, 'PU': ID, 'LB': ID, 'SM': samplename}) for ID in IDs}
 
-    #Opening output file
-    bamfile = ps.AlignmentFile(directory + '/' + args['inputfile'].split('/')[-1].split('.')[0] + '_rg' + '.bam', 'wb', header=header, threads=threads)
+    # Opening output file
+    filename = directory + '/' + args['inputfile'].split('/')[-1].split('.')[0] + '_rg' + '.bam'
+    bamfile = open(filename, 'w')
 
-    #Adding read groups to alignments
-    samfile = ps.AlignmentFile(args['inputfile'], "rb", threads=threads)
+    # Buffer to stream output
+    pipe_out = subprocess.Popen(['samtools','view', '-bSh', '-@', str(threads), '-'], stdin=subprocess.PIPE, stdout=bamfile)
+
+    # Writing header
+    pipe_out.stdin.write(header_as_str(header).encode())
+
+    # Adding read groups to alignments
+    pipe_in = subprocess.Popen(['samtools','view', '-h', '-@', str(threads), args['inputfile']], stdout=subprocess.PIPE)
+    samfile = ps.AlignmentFile(pipe_in.stdout, 'r')
     for read in samfile:
         ID = '_'.join(read.query_name.split(':')[:4])
         read.tags = read.tags + [('RG', ID)]
-        bamfile.write(read)
+        read_str = read.tostring() + '\n'
+        pipe_out.stdin.write(read_str.encode())
     #end for
 
     bamfile.close()
-# end def main
+#end def main
 
+################################################
+#   MAIN
+################################################
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Add read groups to a BAM file')
@@ -67,4 +103,4 @@ if __name__ == '__main__':
 
     main(args)
 
-# end if
+#end if
