@@ -44,7 +44,8 @@ def main(args):
     threads = int(args['threads']) if args['threads'] else 1
 
     # Open bamfile using samtools and send to pipe
-    pipe_in = subprocess.Popen(['samtools','view', '-h', '-@', str(threads), args['inputfile']], stdout=subprocess.PIPE)
+    # pipe_in = subprocess.Popen(['samtools','view', '-h', '-@', str(threads), args['inputfile']], stdout=subprocess.PIPE)
+    pipe_in = subprocess.Popen(['samtools', 'view', '-h', '-@ {0}'.format(threads), args['inputfile']], stdout=subprocess.PIPE)
 
     # Data structures
     IDs = set()
@@ -68,13 +69,15 @@ def main(args):
     bamfile = open(filename, 'w')
 
     # Buffer to stream output
-    pipe_out = subprocess.Popen(['samtools','view', '-bSh', '-@', str(threads), '-'], stdin=subprocess.PIPE, stdout=bamfile)
+    # pipe_out = subprocess.Popen(['samtools', 'view', '-bSh', '-@', str(threads), '-'], stdin=subprocess.PIPE, stdout=bamfile)
+    pipe_out = subprocess.Popen(['samtools', 'view', '-b', '-S', '-h', '-@ {0}'.format(threads), '-'], stdin=subprocess.PIPE, stdout=bamfile)
 
     # Writing header
     pipe_out.stdin.write(header_as_str(header).encode())
 
     # Adding read groups to alignments
-    pipe_in = subprocess.Popen(['samtools','view', '-h', '-@', str(threads), args['inputfile']], stdout=subprocess.PIPE)
+    # pipe_in = subprocess.Popen(['samtools', 'view', '-h', '-@', str(threads), args['inputfile']], stdout=subprocess.PIPE)
+    pipe_in = subprocess.Popen(['samtools', 'view', '-h', '-@ {0}'.format(threads), args['inputfile']], stdout=subprocess.PIPE)
     samfile = ps.AlignmentFile(pipe_in.stdout, 'r')
     for read in samfile:
         ID = '_'.join(read.query_name.split(':')[:4])
