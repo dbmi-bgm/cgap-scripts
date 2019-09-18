@@ -24,13 +24,21 @@ import pysam as ps
 def header_as_str(header):
     str_header = ''
     for key in header:
-        for d in header[key]:
+        if type(header[key]) is list:
+            for d in header[key]:
+                s = '@' + str(key) + '\t'
+                for k, v in d.items():
+                    s += str(k) + ':' + str(v) + '\t'
+                #end for
+                str_header += s.rstrip() + '\n'
+            #end for
+        elif type(header[key]) is dict:
             s = '@' + str(key) + '\t'
-            for k, v in d.items():
+            for k, v in header[key].items():
                 s += str(k) + ':' + str(v) + '\t'
             #end for
             str_header += s.rstrip() + '\n'
-        #end for
+        #end if
     #end for
     return str_header
 #end def write_header
