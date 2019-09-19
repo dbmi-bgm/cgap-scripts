@@ -41,7 +41,7 @@ def header_as_str(header):
         #end if
     #end for
     return str_header
-#end def write_header
+#end def
 
 def main(args):
 
