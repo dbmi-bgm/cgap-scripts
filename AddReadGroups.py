@@ -92,6 +92,7 @@ def main(args):
         pipe_out.stdin.write(read_str.encode())
     #end for
 
+    pipe_out.stdin.close()
     bamfile.close()
 #end def main
 
