@@ -43,6 +43,21 @@ def header_as_str(header):
     return str_header
 #end def
 
+def get_read_group(query_name):
+    qn_as_list = query_name.split(':')
+    l = len(qn_as_list) # number of fields in query_name
+    if l == 7: # new style header
+        return '_'.join(qn_as_list[:4])
+    elif l == 5: # old style header
+        return '_'.join(qn_as_list[:2])
+    elif l == 1: # weird style header, just use a placeholder
+        return 'RG_PLACEHOLDER'
+    else:
+        sys.exit('\nFORMAT ERROR: read format {0} not recognized\n'
+                    .format(query_name))
+    #end if
+#end def
+
 def main(args):
 
     # Variables
@@ -64,7 +79,7 @@ def main(args):
     header.setdefault('RG', [])
 
     for read in samfile:
-        ID = '_'.join(read.query_name.split(':')[:4])
+        ID = get_read_group(read.query_name)
         IDs.add(ID)
     #end for
 
@@ -85,7 +100,7 @@ def main(args):
     pipe_in = subprocess.Popen(['samtools', 'view', '-h', '-@ {0}'.format(threads), args['inputfile']], stdout=subprocess.PIPE)
     samfile = ps.AlignmentFile(pipe_in.stdout, 'r')
     for read in samfile:
-        ID = '_'.join(read.query_name.split(':')[:4])
+        ID = get_read_group(read.query_name)
         # not using pysam to add read tag because somehow it is doing
         # something extremely slow and locking all the multi-threading
         read_str = read.tostring() + '\t' + 'RG:Z:{0}'.format(ID) + '\n'
