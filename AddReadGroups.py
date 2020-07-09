@@ -58,6 +58,23 @@ def get_read_group(query_name):
     #end if
 #end def
 
+def check_EOF(filename):
+    EOF_hex = b'\x1f\x8b\x08\x04\x00\x00\x00\x00\x00\xff\x06\x00\x42\x43\x02\x00\x1b\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+    size = os.path.getsize(filename)
+    fb = open(filename, "rb")
+    fb.seek(size - 28)
+    EOF = fb.read(28)
+    fb.close()
+    if EOF != EOF_hex:
+        sys.stderr.write('EOF is missing, adding EOF\n')
+        fb = open(filename, "ab")
+        fb.write(EOF_hex)
+        fb.close()
+    else:
+        sys.stderr.write('EOF is present, skipping\n')
+    #end if
+#end def
+
 def main(args):
 
     # Variables
@@ -109,6 +126,9 @@ def main(args):
 
     pipe_out.stdin.close()
     bamfile.close()
+
+    # Check if bamfile has EOF, if not add EOF
+    check_EOF(filename)
 #end def main
 
 ################################################
