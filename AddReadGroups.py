@@ -124,7 +124,7 @@ def main(args):
         pipe_out.stdin.write(read_str.encode())
     #end for
 
-    pipe_out.stdin.close()
+    pipe_out.communicate()
     bamfile.close()
 
     # Check if bamfile has EOF, if not add EOF
