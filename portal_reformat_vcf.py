@@ -70,7 +70,7 @@ def get_worst_trscrpt(vnt_obj, VEPtag, IMPCT_encode, CNONICL_idx, IMPCT_idx):
         if IMPCT_encode[trscrpt_impct] == worst_IMPCT:
             # Check canonical
             trscrpt_cnonicl = trscrpt.split('|')[CNONICL_idx]
-            if trscrpt_cnonicl == 'YES' or
+            if trscrpt_cnonicl == 'YES' or \
                 trscrpt_cnonicl == '1':
                 return trscrpt
             #end if
