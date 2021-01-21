@@ -58,7 +58,9 @@ def get_worst_trscrpt(vnt_obj, VEPtag, IMPCT_encode, CNONICL_idx, IMPCT_idx):
     #   return a list of value at index across all transcripts
     IMPCT_list = VEP_field(vnt_obj, IMPCT_idx, VEPtag)
     IMPCT_encoded = [IMPCT_encode[IMPCT] for IMPCT in IMPCT_list]
-    worst_IMPCT = min(IMPCT_encoded)
+    try:
+        worst_IMPCT = min(IMPCT_encoded)
+    except Exception: return None
     # Get VEP
     val_get = vnt_obj.get_tag_value(VEPtag)
     # Get worst transcripts
@@ -109,12 +111,10 @@ def main(args):
 
     # Definitions
     vep_init = '##VEP=<ID={0}>'.format(VEPtag)
-    genes_init = '##VEP=<ID=GENES>'
-    spliceai_init = '##VEP=<ID=SPLICEAI>'
-    variant_init = '##VEP=<ID=VARIANT>'
-    spliceai_def = '##INFO=<ID=SPLICEAI,Number=.,Type=String,Description="SpliceAI. Format:\'MAXDS\'">'
+    genes_init = '##CGAP=<ID=GENES>'
+    spliceai_def = '##INFO=<ID=spliceaiMaxds,Number=1,Type=Float,Description="SpliceAI max delta score">'
     genes_def = '##INFO=<ID=GENES,Number=.,Type=String,Description=". Subembedded:\'genes\':Format:\'most_severe_gene|most_severe_transcript|most_severe_feature_ncbi|most_severe_hgvsc|most_severe_hgvsp|most_severe_amino_acids|most_severe_sift_score|most_severe_polyphen_score|most_severe_maxentscan_diff|most_severe_consequence\'">'
-    variant_def = '##INFO=<ID=VARIANT,Number=.,Type=String,Description=". Format:\'CLASS\'">'
+    variant_def = '##INFO=<ID=variantClass,Number=1,Type=String,Description="Variant type">'
 
     # Buffers
     fo = open(args['outputfile'], 'w')
@@ -123,7 +123,7 @@ def main(args):
     vcf_obj = vcf_parser.Vcf(args['inputfile'])
 
     # Modify VEP definition
-    vep_def = '##INFO=<ID={0},Number=.,Type=String,Description=\"Consequence annotations from Ensembl VEP.  Subembedded:\'transcript\':Format:\'{1}\'\">'
+    vep_def = '##INFO=<ID={0},Number=.,Type=String,Description="Consequence annotations from Ensembl VEP.  Subembedded:\'transcript\':Format:\'{1}\'">'
     vep_field_list = []
     for line in vcf_obj.header.definitions.split('\n')[:-1]:
         if line.startswith('##INFO=<ID=' + VEPtag + ','): ##<tag_type>=<ID=<tag>,...
@@ -145,7 +145,7 @@ def main(args):
     vcf_obj.header.remove_tag_definition(VEPtag)
 
     # Update and write custom definitions
-    vcf_obj.header.add_tag_definition(vep_init + '\n' + genes_init + '\n' + spliceai_init  + '\n' + variant_init, 'INFO')
+    vcf_obj.header.add_tag_definition(vep_init + '\n' + genes_init, 'INFO')
     vcf_obj.header.add_tag_definition(spliceai_def, 'INFO')
     vcf_obj.header.add_tag_definition(genes_def, 'INFO')
     vcf_obj.header.add_tag_definition(variant_def, 'INFO')
@@ -190,15 +190,18 @@ def main(args):
         # Get most severe transcript
         worst_trscrpt = get_worst_trscrpt(vnt_obj, VEPtag, IMPCT_encode, CNONICL_idx, IMPCT_idx)
 
+        if not worst_trscrpt: continue
+        #end if
+
         # Get variant class
         # import from granite.shared_functions
         clss = variant_type_ext(vnt_obj.REF, vnt_obj.ALT)
 
         # Add MAXDS to variant INFO
-        if maxds: vnt_obj.add_tag_info('SPLICEAI={0}'.format(maxds))
+        if maxds: vnt_obj.add_tag_info('spliceaiMaxds={0}'.format(maxds))
         #end if
         # Add CLASS to variant INFO
-        vnt_obj.add_tag_info('VARIANT={0}'.format(clss.upper()))
+        vnt_obj.add_tag_info('variantClass={0}'.format(clss.upper()))
 
         # Update and replace VEP tag in variant INFO
         # Adding field most_severe (0|1) to transcripts
