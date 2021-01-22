@@ -22,7 +22,6 @@ from granite.lib import vcf_parser
 # shared_functions as *
 from granite.lib.shared_functions import *
 # shared_vars
-from granite.lib.shared_vars import VEP_encode
 from granite.lib.shared_vars import DStags
 
 ################################################
@@ -99,6 +98,19 @@ def update_worst(vnt_obj, VEPtag, worst_trscrpt):
     return ','.join(trscrpt_update)
 #end def
 
+def get_worst_consequence(consequence, VEP_order, sep='&'):
+    ''' '''
+    consequence_tup = []
+    for cnsqce in consequence.split(sep):
+        try:
+            consequence_tup.append((VEP_order[cnsqce], cnsqce))
+        except Exception:
+            consequence_tup.append((VEP_order['MODIFIER'], cnsqce))
+        #end try
+    #end for
+    return sorted(consequence_tup, key=lambda x_y: x_y[0])[0][1]
+#end def
+
 ################################################
 #   runner
 ################################################
@@ -108,6 +120,35 @@ def main(args):
     is_verbose = args['verbose']
     VEPtag = 'CSQ'
     IMPCT_encode = {'HIGH': 1, 'MODERATE': 2, 'LOW': 3, 'MODIFIER': 4}
+    VEP_order = {
+                    # HIGH
+                    'transcript_ablation': 1,
+                    'splice_acceptor_variant': 2,
+                    'splice_donor_variant': 3,
+                    'stop_gained': 4,
+                    'frameshift_variant': 5,
+                    'stop_lost': 6,
+                    'start_lost': 7,
+                    'transcript_amplification': 8,
+                    # MODERATE
+                    'inframe_insertion': 9,
+                    'inframe_deletion': 10,
+                    'missense_variant': 11,
+                    'protein_altering_variant': 12,
+                    # LOW
+                    'splice_region_variant': 13,
+                    'incomplete_terminal_codon_variant': 14,
+                    'start_retained_variant': 15,
+                    'stop_retained_variant': 16,
+                    'synonymous_variant': 17,
+                    # MODIFIER
+                    'coding_sequence_variant': 18,
+                    'mature_miRNA_variant': 19,
+                    '5_prime_UTR_variant': 20,
+                    '3_prime_UTR_variant': 21,
+                    'intron_variant': 22,
+                    'MODIFIER': 4
+                }
 
     # Definitions
     vep_init = '##VEP=<ID={0}>'.format(VEPtag)
@@ -212,6 +253,7 @@ def main(args):
 
         # Add GENES to variant INFO
         worst_trscrpt_ = worst_trscrpt.split('|')
+        worst_consequence_ = get_worst_consequence(worst_trscrpt_[CONSEQUENCE_idx], VEP_order)
         genes = '{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}'.format(
                                                         worst_trscrpt_[ENSG_idx],
                                                         worst_trscrpt_[ENST_idx],
@@ -222,7 +264,7 @@ def main(args):
                                                         worst_trscrpt_[SIFT_idx],
                                                         worst_trscrpt_[PPHEN_idx],
                                                         worst_trscrpt_[MAXENTDIFF_idx],
-                                                        worst_trscrpt_[CONSEQUENCE_idx]
+                                                        worst_consequence_
                                                 )
         vnt_obj.add_tag_info('GENES={0}'.format(genes))
 
