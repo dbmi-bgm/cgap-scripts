@@ -50,32 +50,37 @@ def get_maxds(vnt_obj, SpAItag_list, SpAI_idx_list):
     return None
 #end def
 
-def get_worst_trscrpt(vnt_obj, VEPtag, IMPCT_encode, CNONICL_idx, IMPCT_idx):
+def get_worst_trscrpt(vnt_obj, VEPtag, VEP_order, CNONICL_idx, CONSEQUENCE_idx, sep='&'):
     ''' '''
-    # Get worst impact among transcripts
-    # VEP_field from granite shared_functions,
-    #   return a list of value at index across all transcripts
-    IMPCT_list = VEP_field(vnt_obj, IMPCT_idx, VEPtag)
-    IMPCT_encoded = [IMPCT_encode[IMPCT] for IMPCT in IMPCT_list]
-    try:
-        worst_IMPCT = min(IMPCT_encoded)
+    try: val_get = vnt_obj.get_tag_value(VEPtag)
     except Exception: return None
-    # Get VEP
-    val_get = vnt_obj.get_tag_value(VEPtag)
-    # Get worst transcripts
-    worst_trscrpt_list = []
-    trscrpt_list = val_get.split(',')
+    #end try
     # Check transcripts
+    worst_trscrpt_tup = []
+    trscrpt_list = val_get.split(',')
+    # Assign worst impact to transcripts
     for trscrpt in trscrpt_list:
-        trscrpt_impct = trscrpt.split('|')[IMPCT_idx]
-        if IMPCT_encode[trscrpt_impct] == worst_IMPCT:
-            # Check canonical
+        trscrpt_cnsqce = trscrpt.split('|')[CONSEQUENCE_idx]
+        worst_cnsqce = get_worst_consequence(trscrpt_cnsqce, VEP_order)
+        try: worst_trscrpt_tup.append((VEP_order[worst_cnsqce], trscrpt))
+        except Exception:
+            worst_trscrpt_tup.append((VEP_order['MODIFIER'], trscrpt))
+        #end try
+    #end for
+    sorted_worst_trscrpt_tup = sorted(worst_trscrpt_tup, key=lambda x_y: x_y[0])
+    worst_impact = sorted_worst_trscrpt_tup[0][0]
+
+    # Get worst transcripts and check canonical
+    worst_trscrpt_list = []
+    for worst_cnsqce, trscrpt in sorted_worst_trscrpt_tup:
+        if worst_cnsqce == worst_impact:
             trscrpt_cnonicl = trscrpt.split('|')[CNONICL_idx]
             if trscrpt_cnonicl == 'YES' or \
                 trscrpt_cnonicl == '1':
                 return trscrpt
             #end if
             worst_trscrpt_list.append(trscrpt)
+        else: break
         #end if
     #end for
     return worst_trscrpt_list[0]
@@ -119,7 +124,6 @@ def main(args):
     # Variables
     is_verbose = args['verbose']
     VEPtag = 'CSQ'
-    IMPCT_encode = {'HIGH': 1, 'MODERATE': 2, 'LOW': 3, 'MODIFIER': 4}
     VEP_order = {
                     # HIGH
                     'transcript_ablation': 1,
@@ -147,7 +151,7 @@ def main(args):
                     '5_prime_UTR_variant': 20,
                     '3_prime_UTR_variant': 21,
                     'intron_variant': 22,
-                    'MODIFIER': 4
+                    'MODIFIER': 23
                 }
 
     # Definitions
@@ -229,7 +233,7 @@ def main(args):
         maxds = get_maxds(vnt_obj, SpAItag_list, SpAI_idx_list)
 
         # Get most severe transcript
-        worst_trscrpt = get_worst_trscrpt(vnt_obj, VEPtag, IMPCT_encode, CNONICL_idx, IMPCT_idx)
+        worst_trscrpt = get_worst_trscrpt(vnt_obj, VEPtag, VEP_order, CNONICL_idx, CONSEQUENCE_idx)
 
         if not worst_trscrpt: continue
         #end if
