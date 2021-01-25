@@ -218,8 +218,8 @@ def main(args):
     HGVSC_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'HGVSc')
     HGVSP_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'HGVSp')
     AACIDS_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'Amino_acids')
-    SIFT_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'SIFT')
-    PPHEN_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'PolyPhen')
+    SIFT_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'SIFT_score')
+    PPHEN_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'Polyphen2_HVAR_score')
     MAXENTDIFF_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'MaxEntScan_diff')
     CONSEQUENCE_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'Consequence')
 
