@@ -50,14 +50,11 @@ def get_maxds(vnt_obj, SpAItag_list, SpAI_idx_list):
     return None
 #end def
 
-def get_worst_trscrpt(vnt_obj, VEPtag, VEP_order, CNONICL_idx, CONSEQUENCE_idx, sep='&'):
+def get_worst_trscrpt(VEP_val, VEP_order, CNONICL_idx, CONSEQUENCE_idx, sep='&'):
     ''' '''
-    try: val_get = vnt_obj.get_tag_value(VEPtag)
-    except Exception: return None
-    #end try
     # Check transcripts
     worst_trscrpt_tup = []
-    trscrpt_list = val_get.split(',')
+    trscrpt_list = VEP_val.split(',')
     # Assign worst impact to transcripts
     for trscrpt in trscrpt_list:
         trscrpt_cnsqce = trscrpt.split('|')[CONSEQUENCE_idx]
@@ -86,12 +83,11 @@ def get_worst_trscrpt(vnt_obj, VEPtag, VEP_order, CNONICL_idx, CONSEQUENCE_idx, 
     return worst_trscrpt_list[0]
 #end def
 
-def update_worst(vnt_obj, VEPtag, worst_trscrpt):
+def update_worst(VEP_val, worst_trscrpt):
     ''' '''
     # Get VEP
-    val_get = vnt_obj.get_tag_value(VEPtag)
     trscrpt_update = []
-    trscrpt_list = val_get.split(',')
+    trscrpt_list = VEP_val.split(',')
     # Update transcripts
     for trscrpt in trscrpt_list:
         if trscrpt == worst_trscrpt:
@@ -114,6 +110,47 @@ def get_worst_consequence(consequence, VEP_order, sep='&'):
         #end try
     #end for
     return sorted(consequence_tup, key=lambda x_y: x_y[0])[0][1]
+#end def
+
+def clean_dbnsfp(vnt_obj, VEPtag, dbNSFP_fields, dbnsfp_ENST_idx, ENST_idx, sep='&'):
+    ''' '''
+    # Get VEP
+    try: val_get = vnt_obj.get_tag_value(VEPtag)
+    except Exception: return None
+    #end try
+    trscrpt_clean = []
+    trscrpt_list = val_get.split(',')
+    # Clean transcripts
+    for trscrpt in trscrpt_list:
+        trscrpt_split = trscrpt.split('|')
+        # Get dbnsfp_ENST
+        dbnsfp_ENST = trscrpt_split[dbnsfp_ENST_idx].split(sep)
+        if len(dbnsfp_ENST) >= 1: # need to assign values by transcripts
+            dbnsfp_idx = -1
+            trscrpt_ENST = trscrpt_split[ENST_idx]
+            # Check index for current transcript in dbNSFP if any
+            for i, ENST in enumerate(dbnsfp_ENST):
+                if ENST == trscrpt_ENST :
+                   dbnsfp_idx = i
+                   break
+                #end if
+            #end for
+            for k, v in dbNSFP_fields.items():
+                if dbnsfp_idx >= 0:
+                    val_ = trscrpt_split[v].split(sep)[dbnsfp_idx]
+                    if val_ == '.': val_ = ''
+                    #end if
+                    trscrpt_split[v] = val_
+                else:
+                    trscrpt_split[v] = ''
+                #end if
+            #end for
+            trscrpt_clean.append('|'.join(trscrpt_split))
+        else:
+            trscrpt_clean.append(trscrpt)
+        #end if
+    #end for
+    return ','.join(trscrpt_clean)
 #end def
 
 ################################################
@@ -153,6 +190,14 @@ def main(args):
                     'intron_variant': 22,
                     'MODIFIER': 23
                 }
+    dbNSFP_fields = {
+                    # dbNSFP fields that may be a list
+                    # and need to be assigned to transcripts
+                    'Polyphen2_HVAR_pred': 0,
+                    'Polyphen2_HVAR_score': 0,
+                    'SIFT_pred': 0,
+                    'SIFT_score': 0
+                    }
 
     # Definitions
     vep_init = '##VEP=<ID={0}>'.format(VEPtag)
@@ -209,17 +254,22 @@ def main(args):
     #end for
 
     # Get VEP indexes
-    IMPCT_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'IMPACT')
-    CNONICL_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'CANONICAL')
+    # Indexes to resolve dbNSFP values by transcript
+    dbnsfp_ENST_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'Ensembl_transcriptid')
+    for field in dbNSFP_fields:
+        dbNSFP_fields[field] = vcf_obj.header.get_tag_field_idx(VEPtag, field)
+    #end for
 
+    # Indexes for worst transcript (GENES)
+    CNONICL_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'CANONICAL')
     ENSG_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'Gene')
     ENST_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'Feature')
     MANE_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'MANE') #feature_ncbi
     HGVSC_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'HGVSc')
     HGVSP_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'HGVSp')
     AACIDS_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'Amino_acids')
-    SIFT_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'SIFT_score')
-    PPHEN_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'Polyphen2_HVAR_score')
+    SIFT_idx = dbNSFP_fields['SIFT_score']
+    PPHEN_idx = dbNSFP_fields['Polyphen2_HVAR_score']
     MAXENTDIFF_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'MaxEntScan_diff')
     CONSEQUENCE_idx = vcf_obj.header.get_tag_field_idx(VEPtag, 'Consequence')
 
@@ -229,14 +279,17 @@ def main(args):
             sys.stderr.write('\r' + str(i+1))
             sys.stderr.flush()
         #end if
+        # Clean dbNSFP by resolving values by transcript
+        VEP_clean = clean_dbnsfp(vnt_obj, VEPtag, dbNSFP_fields, dbnsfp_ENST_idx, ENST_idx)
+
+        if not VEP_clean: continue
+        #end if
+
         # Get max SpliceAI max_ds
         maxds = get_maxds(vnt_obj, SpAItag_list, SpAI_idx_list)
 
         # Get most severe transcript
-        worst_trscrpt = get_worst_trscrpt(vnt_obj, VEPtag, VEP_order, CNONICL_idx, CONSEQUENCE_idx)
-
-        if not worst_trscrpt: continue
-        #end if
+        worst_trscrpt = get_worst_trscrpt(VEP_clean, VEP_order, CNONICL_idx, CONSEQUENCE_idx)
 
         # Get variant class
         # import from granite.shared_functions
@@ -250,7 +303,7 @@ def main(args):
 
         # Update and replace VEP tag in variant INFO
         # Adding field most_severe (0|1) to transcripts
-        VEP_update = update_worst(vnt_obj, VEPtag, worst_trscrpt)
+        VEP_update = update_worst(VEP_clean, worst_trscrpt)
         # Replace VEP
         vnt_obj.remove_tag_info(VEPtag)
         vnt_obj.add_tag_info('{0}={1}'.format(VEPtag, VEP_update))
