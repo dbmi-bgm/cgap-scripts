@@ -24,6 +24,8 @@ from granite.lib.shared_functions import *
 # shared_vars
 from granite.lib.shared_vars import DStags
 
+import codecs
+
 ################################################
 #
 #   Functions
@@ -207,7 +209,7 @@ def main(args):
     variant_def = '##INFO=<ID=variantClass,Number=1,Type=String,Description="Variant type">'
 
     # Buffers
-    fo = open(args['outputfile'], 'w')
+    fo = codecs.open(args['outputfile'],'w','utf-8')
 
     # Creating Vcf object
     vcf_obj = vcf_parser.Vcf(args['inputfile'])
