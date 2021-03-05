@@ -20,7 +20,7 @@ Re-formats a VCF file by adding custom tags and fields used for portal ingestion
     ##INFO=<ID=GENES,Number=.,Type=String,Description=". Subembedded:'genes':Format:'most_severe_gene|most_severe_transcript|most_severe_feature_ncbi|most_severe_hgvsc|most_severe_hgvsp|most_severe_amino_acids|most_severe_sift_score|most_severe_polyphen_score|most_severe_maxentscan_diff|most_severe_consequence'">
 
 #### samplegeno.py
-Adds genotypes information for each variant to info field using the tag `SAMPLEGENO`.
+Adds genotypes information for each variant to INFO field using the tag `SAMPLEGENO`.
 
 Tag definition
 
@@ -31,7 +31,7 @@ Example
     SAMPLEGENO=0/1|C/T|9/4|NA12877,0/0|C/C|34/0|NA12878,0/1|C/T|12/17|NA12879
 
 #### add_altcounts_by_gene.py
-Adds alternate allele counts on the most severe gene per sample.
+Adds alternate alleles count on the most severe gene per sample.
 Requires `SAMPLEGENO`.
 The count is appended to `SAMPLEGENO` tag.
 
