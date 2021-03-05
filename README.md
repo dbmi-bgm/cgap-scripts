@@ -1,16 +1,16 @@
 # cgap-scripts
 
 #### AddReadGroups.py
-Add read groups to a BAM file using pysam and samtools to multi-thread compression.
+Adds read groups to a BAM file using pysam and samtools to multi-thread compression.
 Can handle multiple read groups.
 
 #### duplines_vcf.py
-Removes duplicate variants from sorted input VCF file while keeping the most informative one.
+Removes duplicate variants from sorted input VCF file while keeping the most informative.
 
 #### portal_reformat_vcf.py
 Re-formats a VCF file by adding custom tags and fields used for portal ingestion:
 
-  - expands VEP annotations by appending a bool (0, 1) to each transcript to flag the most severe one
+  - expands VEP annotations by appending a bool (0, 1) to each transcript to flag the most severe
   - adds a new tag with maximum DS for SpliceAI if any, `spliceaiMaxds`
   - adds a summary for the most severe transcript / gene using the tag `GENES`
   - adds the type of variant in `variantClass`
@@ -31,7 +31,7 @@ Example
     SAMPLEGENO=0/1|C/T|9/4|NA12877,0/0|C/C|34/0|NA12878,0/1|C/T|12/17|NA12879
 
 #### add_altcounts_by_gene.py
-Add alternate allele counts on the most severe gene per sample.
+Adds alternate allele counts on the most severe gene per sample.
 Requires `SAMPLEGENO`.
 The count is appended to `SAMPLEGENO` tag.
 
