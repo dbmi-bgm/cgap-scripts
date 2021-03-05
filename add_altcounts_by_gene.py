@@ -31,7 +31,7 @@ def get_most_severe(vnt_obj, VEPtag, ENSG_idx, most_severe_idx):
     except Exception: return False
     #end try
     trscrpt_list = val_get.split(',')
-    # Get all terms
+    # Check most severe field
     for trscrpt in trscrpt_list:
         most_severe = int(trscrpt.split('|')[most_severe_idx])
         if most_severe:
