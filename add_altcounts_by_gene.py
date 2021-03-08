@@ -20,6 +20,8 @@ import sys, argparse, os
 #import vcf_parser from granite
 from granite.lib import vcf_parser
 
+import codecs
+
 ################################################
 #
 #   Functions
@@ -76,7 +78,7 @@ def main(args):
     #end for
 
     # Buffers
-    fo = open(args['outputfile'], 'w')
+    fo = codecs.open(args['outputfile'],'w','utf-8')
 
     # Update and write header
     vcf_obj.header.remove_tag_definition('SAMPLEGENO')
