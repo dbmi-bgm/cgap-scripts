@@ -3,7 +3,7 @@
 ################################################
 #
 #   Split a bam file in consecutive chunks,
-#     each chunck contains specified number of reads
+#     each chunk contains specified number of reads
 #
 #   Michele Berselli
 #   berselli.michele@gmail.com
@@ -42,7 +42,7 @@ def write_bam(name, directory, chunk, header, reads, threads):
     bamfile = open(filename, 'w')
 
     # Buffer to stream output
-    pipe_out = subprocess.Popen(['samtools', 'view', '-b', '-S', '-h', '-@ {0}'.format(threads/2), '-'], stdin=subprocess.PIPE, stdout=bamfile)
+    pipe_out = subprocess.Popen(['samtools', 'view', '-b', '-S', '-h', '-@ {0}'.format(threads//2), '-'], stdin=subprocess.PIPE, stdout=bamfile)
 
     # Writing header
     pipe_out.stdin.write(header.encode())
@@ -78,7 +78,7 @@ def main(args):
     #end for
 
     # Open bamfile reads
-    samfile = os.popen('samtools view -@ {0} {1}'.format(threads/2, args['inputfile']))
+    samfile = os.popen('samtools view -@ {0} {1}'.format(threads//2, args['inputfile']))
 
     # Reading reads
     i, c, reads = 0, 0, []

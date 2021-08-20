@@ -29,8 +29,8 @@ def main(args):
     # Variables
     threads = int(args['threads']) if args['threads'] else 2
 
-    samfile1 = to_generator(os.popen('samtools view -@ {0} {1}'.format(threads/2, args['input_1'])))
-    samfile2 = to_generator(os.popen('samtools view -@ {0} {1}'.format(threads/2, args['input_2'])))
+    samfile1 = to_generator(os.popen('samtools view -@ {0} {1}'.format(threads//2, args['input_1'])))
+    samfile2 = to_generator(os.popen('samtools view -@ {0} {1}'.format(threads//2, args['input_2'])))
 
     # Compare reads
     i, r1, r2 = 0, '', ''
