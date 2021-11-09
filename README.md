@@ -38,3 +38,12 @@ The count is appended to `SAMPLEGENO` tag.
 Tag expansion
 
     ##INFO=<ID=SAMPLEGENO,Number=.,Type=String,Description="Sample genotype information. Subembedded:'samplegeno':Format:'NUMGT|GT|AD|SAMPLEID|AC'">
+
+#### depth_filter.py
+Filters variants called in VCF format based on DP (depth of coverage) from the genotype column.
+
+#### split_bam.py
+Splits a bam file in multiple chunks. Each chunk is a bam file that contains the maximum number of reads speficied. The original header is used in writing each bam. Chunks maintain the order of the reads and are ordered with an index in the filename.
+
+#### compare_bams.py
+Compares reads in two bam files line by line and print mismatching lines.
