@@ -49,4 +49,4 @@ Splits a bam file in multiple chunks. Each chunk is a bam file that contains the
 Compares reads in two bam files line by line and print mismatching lines.
 
 #### liftover_hg19.py
-Carries out liftover of CHROM and POS for SNV pipeline from hg38 to hg19 (hg19_chr and hg19_pos added to INFO field if position exists in hg19). Carries out liftover of CHROM, POS and END for SV pipeline from hg38 to hg19 (hg19_chr and hg19_pos (and/or) hg19_end added to INFO field if breakpoint positions are present in hg19). For more information, see [Docs](https://cgap-pipeline-master.readthedocs.io/en/latest/Pipelines/Downstream/SNV_germline/Pages/SNV_germline-step-hg19LO-hgvsg.html#).
+Carries out liftover of CHROM and POS for SNV pipeline from hg38 to hg19 (hg19_chr and hg19_pos added to INFO field if position exists in hg19). Carries out liftover of CHROM, POS and END for SV pipeline from hg38 to hg19 (hg19_chr and hg19_pos (and/or) hg19_end added to INFO field if breakpoint positions are present in hg19). For more information, see [Docs](https://cgap-pipeline-main.readthedocs.io/en/latest/Pipelines/Downstream/SNV_germline/Pages/SNV_germline-step-hg19LO-hgvsg.html#).
