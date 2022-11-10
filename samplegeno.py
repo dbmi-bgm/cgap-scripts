@@ -48,7 +48,7 @@ def main(args):
     for vnt_obj in vcf_obj.parse_variants():
         # Init empty samplegeno
         samplegeno = []
-
+        vnt_obj.complete_genotype()
         # Get possible alleles
         # REF is at idx 0, ALT idxs are maintained
         alleles = [vnt_obj.REF] + vnt_obj.ALT.split(',')
