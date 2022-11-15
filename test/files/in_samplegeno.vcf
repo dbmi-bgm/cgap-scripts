@@ -1,0 +1,43 @@
+##fileformat=VCFv4.2
+##DRAGENCommandLine=<ID=HashTableBuild,Version="SW: 01.003.044.3.5.7, HashTableVersion: 8",CommandLineOptions="dragen --build-hash-table true --ht-reference /ephemeral/HG19_reference_files/hg19_nc_012920_1.fa --output-dir /ephemeral/CNV_REF_no_liftover/ --ht-alt-aware-validate=false --enable-cnv true">
+##DRAGENCommandLine=<ID=dragen,Version="SW: 05.021.510.3.5.7, HW: 05.021.510",Date="Sun Jan 30 17:32:58 UTC 2022",CommandLineOptions="--ref-dir /ephemeral/CNV_REF_no_liftover/ -1 s3://dragen-poc-bucket-frankfurt/220128_A01142_0312_BH5TJJDSX3/62939115_S3_R2_001.fastq.gz -2 s3://dragen-poc-bucket-frankfurt/220128_A01142_0312_BH5TJJDSX3/62939115_S3_R1_001.fastq.gz --output-directory /ephemeral/5183dd74-2bce-4f8b-94fd-18a151c1c0e2 --output-file-prefix 62939115_S3 --enable-map-align true --output-format BAM --enable-variant-caller true --RGID ID --RGSM 62939115_S3 --lic-server http://XXXXXXXXXXXX:YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY@license.edicogenome.com --enable-cnv true --enable-sv true --enable-map-align-output true --vc-enable-roh true --repeat-genotype-enable true --repeat-genotype-specs /opt/edico/repeat-specs/hg19/variant_catalog.json --cnv-enable-self-normalization true --cnv-interval-width 250 --output_status_file /ephemeral/5183dd74-2bce-4f8b-94fd-18a151c1c0e2/job-speedometer.log --intermediate-results-dir /ephemeral/ --lic-no-print">
+##FILTER=<ID=DRAGENHardQUAL,Description="Set if true:QUAL < 10.4139">
+##FILTER=<ID=LowDepth,Description="Set if true:DP <= 1">
+##FILTER=<ID=PASS,Description="All filters passed">
+##FILTER=<ID=PloidyConflict,Description="Genotype call from variant caller not consistent with chromosome ploidy">
+##FILTER=<ID=base_quality,Description="Site filtered because median base quality of alt reads at this locus does not meet threshold">
+##FILTER=<ID=lod_fstar,Description="Variant does not meet likelihood threshold (default threshold is 6.3)">
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Allelic depths (counting only informative reads out of the total reads) for the ref and alt alleles in the order listed">
+##FORMAT=<ID=AF,Number=A,Type=Float,Description="Allele fractions for alt alleles in the order listed">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
+##FORMAT=<ID=F1R2,Number=R,Type=Integer,Description="Count of reads in F1R2 pair orientation supporting each allele">
+##FORMAT=<ID=F2R1,Number=R,Type=Integer,Description="Count of reads in F2R1 pair orientation supporting each allele">
+##FORMAT=<ID=GP,Number=G,Type=Float,Description="Phred-scaled posterior probabilities for genotypes as defined in the VCF specification">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=MB,Number=4,Type=Integer,Description="Per-sample component statistics to detect mate bias">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+##FORMAT=<ID=PRI,Number=G,Type=Float,Description="Phred-scaled prior probabilities for genotypes">
+##FORMAT=<ID=PS,Number=1,Type=Integer,Description="Physical phasing ID information, where each unique ID within a given sample (but not across samples) connects records within a phasing group">
+##FORMAT=<ID=SB,Number=4,Type=Integer,Description="Per-sample component statistics which comprise the Fisher's Exact Test to detect strand bias">
+##FORMAT=<ID=SQ,Number=1,Type=Float,Description="Somatic quality">
+##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes, for each ALT allele, in the same order as listed">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (informative and non-informative); some reads may have been filtered based on mapq etc.">
+##INFO=<ID=END,Number=1,Type=Integer,Description="Stop position of the interval">
+##INFO=<ID=FS,Number=1,Type=Float,Description="Phred-scaled p-value using Fisher's exact test to detect strand bias">
+##INFO=<ID=MQ,Number=1,Type=Float,Description="RMS Mapping Quality">
+##INFO=<ID=MQRankSum,Number=1,Type=Float,Description="Z-score From Wilcoxon rank sum test of Alt vs. Ref read mapping qualities">
+##INFO=<ID=ReadPosRankSum,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt vs. Ref read position bias">
+##INFO=<ID=ReverseComplementedAlleles,Number=0,Type=Flag,Description="The REF and the ALT alleles have been reverse complemented in liftover since the mapping from the previous reference to the current one was on the negative strand.">
+##INFO=<ID=SOR,Number=1,Type=Float,Description="Symmetric Odds Ratio of 2x2 contingency table to detect strand bias">
+##INFO=<ID=SwappedAlleles,Number=0,Type=Flag,Description="The REF and the ALT alleles have been swapped in liftover due to changes in the reference. It is possible that not all INFO annotations reflect this swap, and in the genotypes, only the GT, PL, and AD fields have been modified. You should check the TAGS_TO_REVERSE parameter that was used during the LiftOver to be sure.">
+##bcftools_mergeCommand=merge --merge none -o merged.vcf.gz -O z --threads 14 /var/lib/cwl/stg53ac0c81-4352-4058-8550-4cb37d573b3d/GAPFIW3SRW8O.vcf.gz /var/lib/cwl/stg3e68e600-1fad-4caf-a148-c71677589eba/GAPFIP25CWR9.vcf.gz /var/lib/cwl/stg1ec7960d-bfce-4973-877f-72de51e3ae89/GAPFILGKVET6.vcf.gz; Date=Mon Nov  7 17:41:32 2022
+##bcftools_mergeVersion=1.11+htslib-1.11
+##reference=file:/var/lib/cwl/stg2b3a0994-bcc7-4500-a58c-3262f69aab17/GAPFIXRDPDK5.fa
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	62939115_S3	62939117_S4	62939118_S5
+chr1	10146	.	AC	A	998	PASS	AC=3;AF=0.5;AN=6;DP=166;FS=6.349;MQ=21.14;MQRankSum=-1.002;ReadPosRankSum=0.359;SOR=2.124	GT:AD:AF:DP:F1R2:F2R1:GQ:PL:GP:PRI:SB:MB	0/1:10,24:0.706:34:6,8:4,16:32:72,0,29:42.503,0.0029994,31.978:0,29,32:5,5,6,18:5,5,14,10	0/1:5,16:0.762:21:1,6:4,10:11:63,0,8:34.345,0.32036,11.503:0,29,32:2,3,4,12:4,1,12,4	0/1:9,18:0.667:27:6,7:3,11:37:70,0,37:40.626,0.00086338,39.5:0,29,32:6,3,9,9:5,4,8,10
+chr1	149135536	.	ATT	AT,A,ATTTT	7000	PASS	AC=3,2,1;AF=0.5,0.5,0.5;AN=6;DP=201;FS=12.964;MQ=36.98;MQRankSum=1.014;OriginalContig=chr1;OriginalStart=144561420;ReadPosRankSum=-1.453;ReverseComplementedAlleles;SOR=1.203	GT:AF:DP:F1R2:F2R1:GP:GQ:MB:PRI:SB	1/2:0.635,0.324,.:74:1,19,12,.:2,28,12,.:297.91,256.16,24.064,450,0.017226,44.511,.,.,.,.:24:2,1,36,35:0,8,11,8,16,11,.,.,.,.:0,3,46,25	1/3:0.714,.,0.232:56:0,22,.,8:3,18,.,5:208.35,167.22,7.8817,.,.,.,412.13,0.77222,.,44.897:8:1,2,31,22:0,7,10,.,.,.,7,14,.,10:2,1,32,21	1/2:0.471,0.324,.:68:8,17,13,.:6,15,9,.:211.55,169.11,26.154,233.67,0.01066,45.636,.,.,.,.:26:10,4,33,21:0,8,11,8,16,11,.,.,.,.:6,8,37,17
+chr1	199135636	.	ATT	AT,A,AT	7000	PASS	AC=3,2,1;AF=0.5,0.5,0.5;AN=6;DP=201;FS=12.964;MQ=36.98;MQRankSum=1.014;OriginalContig=chr1;OriginalStart=144561420;ReadPosRankSum=-1.453;ReverseComplementedAlleles;SOR=1.203	GT:AF:DP:F1R2:F2R1:GP:GQ:MB:PRI:SB	1:0.635,0.324,.:74:1,19,12,.:2,28,12,.:297.91,256.16,24.064,450,0.017226,44.511,.,.,.,.:24:2,1,36,35:0,8,11,8,16,11,.,.,.,.:0,3,46,25	3:0.714,.,0.232:56:0,22,.,8:3,18,.,5:208.35,167.22,7.8817,.,.,.,412.13,0.77222,.,44.897:8:1,2,31,22:0,7,10,.,.,.,7,14,.,10:2,1,32,21	1/2:0.471,0.324,.:68:8,17,13,.:6,15,9,.:211.55,169.11,26.154,233.67,0.01066,45.636,.,.,.,.:26:10,4,33,21:0,8,11,8,16,11,.,.,.,.:6,8,37,17
+chr19	885913	.	T	C	2639	PASS	AC=3;AF=1;AN=4;DP=52;FS=1.957;MQ=220.76;MQRankSum=-1.288;ReadPosRankSum=0.044;SOR=0.877	GT:AD:AF:DP:F1R2:F2R1:GQ:PL:GP:PRI:SB:MB	0/1:8,10:0.556:18:3,4:5,6:48:85,0,50:50,6.5751e-05,52.884:0,34.77,37.77:3,5,6,4:4,4,4,6	1/1:2,23:0.92:25:2,8:0,15:62:150,65,0:112.3,62.297,2.5886e-06:0,34.77,37.77:2,0,9,14:2,0,16,7	./.:.:.:.:.:.:.:.:.:.:.:.
