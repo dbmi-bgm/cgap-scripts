@@ -109,6 +109,26 @@ def process_GT_values(vnt_obj, ID_genotype):
 
 
 """
+Generate empty zero based the AD field.
+Example: 
+REF= A
+ALT=T,C,G
+
+The function will return 0,0,0,0
+
+:return: AD value
+:rtype: str
+"""
+
+
+def generate_empty_AD(vnt_obj):
+    ad_num = 1  # number of ref + alt alleles, starts from 1 for the ref
+    ad_num += len(vnt_obj.ALT.split(","))
+
+    return ",".join(["0"] * ad_num)
+
+
+"""
 Process the AD field for the sample
 
 :param vnt_obj: Variant to be checked
@@ -128,20 +148,16 @@ def process_AD_values(vnt_obj, ID_genotype):
         # replace dots with Os to make it compatible with the portal
         if AD == ".":
             # two zeros for ref and alt alleles
-            AD = "0,0"
+            AD = generate_empty_AD(vnt_obj)
             replace_genotype_value(vnt_obj, "AD", ID_genotype, AD)
         if "." in AD:
-            # replace all dots with zeros 
+            # replace all dots with zeros
             AD = AD.replace(".", "0")
             replace_genotype_value(vnt_obj, "AD", ID_genotype, AD)
 
+    except Exception:
 
-    except ValueError:
-
-        ad_num = 1  # number of ref + alt alleles, starts from 1 for the ref
-        ad_num += len(vnt_obj.ALT.split(","))
-
-        AD = ",".join(["0"] * ad_num)
+        AD = generate_empty_AD(vnt_obj)
 
         vnt_obj.add_values_genotype(ID_genotype, AD)
 
@@ -159,7 +175,7 @@ Checks if the AD tag is in the FORMAT column, if it's not then adds the AD tag
 def check_AD_field(vnt_obj):
     try:
         AD_tag = vnt_obj.get_tag_value("AD")
-    except ValueError:
+    except Exception:
         vnt_obj.add_tag_format("AD")
 
 
