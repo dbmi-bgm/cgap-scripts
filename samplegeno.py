@@ -173,10 +173,9 @@ Checks if the AD tag is in the FORMAT column, if it's not then adds the AD tag
 
 
 def check_AD_field(vnt_obj):
-    try:
-        AD_tag = vnt_obj.get_tag_value("AD")
-    except Exception:
+    if "AD"  not in vnt_obj.FORMAT.split(":"):
         vnt_obj.add_tag_format("AD")
+
 
 
 def main(args):
