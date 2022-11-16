@@ -176,6 +176,19 @@ def check_AD_field(vnt_obj):
     if "AD"  not in vnt_obj.FORMAT.split(":"):
         vnt_obj.add_tag_format("AD")
 
+"""
+Checks if the AD tag is defined in the header, if it's not then adds the AD tag definition 
+
+:param vcf_obj: Vcf to be checked
+:type vnt_obj: Vcf
+"""
+def check_AD_definition(vcf_obj):
+    ad_def = "##FORMAT=<ID=AD,Number=R,Type=Integer,Description='Allelic depths (counting only informative reads out of the total reads) for the ref and alt alleles in the order listed'>"
+    try:
+        vcf_obj.header.check_tag_definition("AD", tag_type='FORMAT')
+    except Exception:
+        vcf_obj.header.add_tag_definition(ad_def, tag_type="FORMAT")
+
 
 
 def main(args):
@@ -192,6 +205,7 @@ def main(args):
 
     # Update and write header
     vcf_obj.header.add_tag_definition(granite_def + "\n" + samplegeno_def, "INFO")
+    check_AD_definition(vcf_obj)
     vcf_obj.write_header(fo)
 
     # Reading variants and adding samplegeno
