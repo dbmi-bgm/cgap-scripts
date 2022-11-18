@@ -104,7 +104,7 @@ def process_GT_values(vnt_obj, ID_genotype):
         GT_1 = GT_1_
 
     GT_alleles = f"{GT_0}/{GT_1}"
-    GT = vnt_obj.get_genotype_value(ID_genotype, "GT")
+    GT = f"{GT_0_}/{GT_1_}"
     return GT, GT_alleles
 
 
