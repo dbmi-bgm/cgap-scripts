@@ -7,10 +7,10 @@ ycov=$(echo "scale=4; $(samtools idxstats $1 | grep -P "Y\t" | cut -f 3)/$(samto
 ratio=$(echo "scale=4; ${xcov}/${ycov}" | bc)
 
 echo
-echo "X Coverage: $xcov"
-echo "Y Coverage: $ycov"
-echo "XY Ratio: $ratio"
+echo "X Coverage (mapped reads divided by sequence length): $xcov"
+echo "Y Coverage (mapped reads divided by sequence length): $ycov"
+echo "XY Coverage Ratio: $ratio"
 echo
-echo "Expected Male: 0.9 - 1.5"
-echo "Expected Female: 4.5 - 7.0"
+echo "Expected Male: 0.9-1.5"
+echo "Expected Female: 4.5-7.0"
 echo
