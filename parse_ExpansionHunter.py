@@ -47,15 +47,13 @@ def get_counts(inputfile, repeat):
             #   and return repeat counts
             return int(REF), [REF_ALT[GT_0], REF_ALT[GT_1]]
 
-def plot(x, filename, repeat, REF):
+def plot(unique, counts, filename, repeat, REF):
     """
     """
     # Create Histogram
     _, ax = plt.subplots(1, 1)
 
-    # Data to numpy array
-    x = np.array(x)
-    unique, counts = np.unique(x, return_counts=True)
+    # Format data for plot
     unique_ = list(map(str, unique))
     colors = ["#8856a7" if i == REF else "#1c9099" for i in unique]
 
@@ -102,10 +100,22 @@ def main(args):
     # Close output file
     fo.close()
 
+    # Data to numpy array
+    x = np.array(x)
+
+    # Get counts
+    unique, counts = np.unique(x, return_counts=True)
+    total = sum(counts)
+
+    # Plot
     if args['histogram']:
-        plot(x, args['outputname']+'_histogram.png', repeat, REF)
+        plot(unique, counts, args['outputname']+'_histogram.png', repeat, REF)
 
-
+    # Counts
+    with open(args['outputname']+'.counts.tsv', 'w') as fc:
+        fc.write(f'#Repeat\tCounts\tPercentage\n')
+        for i, repeat in enumerate(unique):
+            fc.write(f'{repeat}\t{counts[i]}\t{counts[i]/total*100}\n')
 
 ################################################
 #   Main
